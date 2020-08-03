@@ -31,6 +31,7 @@ func TestReceiver(t *testing.T) {
 		zap.NewNop(),
 		cfg,
 		&testbed.MockMetricConsumer{},
+		nil,
 	)
 
 	require.NoError(t, err)
