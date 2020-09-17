@@ -16,17 +16,19 @@ package awsecscontainermetrics
 
 import metricspb "github.com/census-instrumentation/opencensus-proto/gen-go/metrics/v1"
 
-func cumulativeInt(metricName string, units string, value *uint64) *metricspb.Metric {
+func intGauge(metricName string, unit string, value *uint64, labelKeys []*metricspb.LabelKey, labelValues []*metricspb.LabelValue) *metricspb.Metric {
 	if value == nil {
 		return nil
 	}
 	return &metricspb.Metric{
 		MetricDescriptor: &metricspb.MetricDescriptor{
-			Name: metricName,
-			Unit: units,
-			Type: metricspb.MetricDescriptor_CUMULATIVE_INT64,
+			Name:      metricName,
+			Unit:      unit,
+			Type:      metricspb.MetricDescriptor_GAUGE_INT64,
+			LabelKeys: labelKeys,
 		},
 		Timeseries: []*metricspb.TimeSeries{{
+			LabelValues: labelValues,
 			Points: []*metricspb.Point{{
 				Value: &metricspb.Point_Int64Value{
 					Int64Value: int64(*value),
@@ -36,17 +38,19 @@ func cumulativeInt(metricName string, units string, value *uint64) *metricspb.Me
 	}
 }
 
-func cumulativeDouble(metricName string, units string, value *float64) *metricspb.Metric {
+func doubleGauge(metricName string, unit string, value *float64, labelKeys []*metricspb.LabelKey, labelValues []*metricspb.LabelValue) *metricspb.Metric {
 	if value == nil {
 		return nil
 	}
 	return &metricspb.Metric{
 		MetricDescriptor: &metricspb.MetricDescriptor{
-			Name: metricName,
-			Unit: units,
-			Type: metricspb.MetricDescriptor_CUMULATIVE_DOUBLE,
+			Name:      metricName,
+			Unit:      unit,
+			Type:      metricspb.MetricDescriptor_GAUGE_DOUBLE,
+			LabelKeys: labelKeys,
 		},
 		Timeseries: []*metricspb.TimeSeries{{
+			LabelValues: labelValues,
 			Points: []*metricspb.Point{{
 				Value: &metricspb.Point_DoubleValue{
 					DoubleValue: *value,
@@ -56,40 +60,22 @@ func cumulativeDouble(metricName string, units string, value *float64) *metricsp
 	}
 }
 
-func intGauge(metricName string, units string, value *uint64) *metricspb.Metric {
+func intCumulative(metricName string, unit string, value *uint64, labelKeys []*metricspb.LabelKey, labelValues []*metricspb.LabelValue) *metricspb.Metric {
 	if value == nil {
 		return nil
 	}
 	return &metricspb.Metric{
 		MetricDescriptor: &metricspb.MetricDescriptor{
-			Name: metricName,
-			Unit: units,
-			Type: metricspb.MetricDescriptor_GAUGE_INT64,
+			Name:      metricName,
+			Unit:      unit,
+			Type:      metricspb.MetricDescriptor_CUMULATIVE_INT64,
+			LabelKeys: labelKeys,
 		},
 		Timeseries: []*metricspb.TimeSeries{{
+			LabelValues: labelValues,
 			Points: []*metricspb.Point{{
 				Value: &metricspb.Point_Int64Value{
 					Int64Value: int64(*value),
-				},
-			}},
-		}},
-	}
-}
-
-func doubleGauge(metricName string, units string, value *float64) *metricspb.Metric {
-	if value == nil {
-		return nil
-	}
-	return &metricspb.Metric{
-		MetricDescriptor: &metricspb.MetricDescriptor{
-			Name: metricName,
-			Unit: units,
-			Type: metricspb.MetricDescriptor_GAUGE_DOUBLE,
-		},
-		Timeseries: []*metricspb.TimeSeries{{
-			Points: []*metricspb.Point{{
-				Value: &metricspb.Point_DoubleValue{
-					DoubleValue: *value,
 				},
 			}},
 		}},

@@ -11,31 +11,30 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 package awsecscontainermetrics
 
 import (
+	"testing"
 	"time"
 
 	metricspb "github.com/census-instrumentation/opencensus-proto/gen-go/metrics/v1"
+	"github.com/stretchr/testify/require"
 )
 
-func memMetrics(prefix string, s *MemoryStats) []*metricspb.Metric {
-	return applyCurrentTime([]*metricspb.Metric{
-		memUsageMetric(prefix, s),
-		memMaxUsageMetric(prefix, s),
-		memLimitMetric(prefix, s),
-	}, time.Now())
+func TestTimestampProto(t *testing.T) {
+	timestamp := timestampProto(time.Now())
+
+	require.NotNil(t, timestamp)
 }
 
-func memUsageMetric(prefix string, s *MemoryStats) *metricspb.Metric {
-	return intGauge(prefix+"memory.usage", "Bytes", s.Usage)
-}
+func TestApplyTimestamp(t *testing.T) {
+	timestamp := timestampProto(time.Now())
+	m := []*metricspb.Metric{
+		createGaugeIntMetric(1),
+	}
 
-func memMaxUsageMetric(prefix string, s *MemoryStats) *metricspb.Metric {
-	return intGauge(prefix+"memory.maxusage", "Bytes", s.MaxUsage)
-}
+	metrics := applyTimestamp(m, timestamp)
 
-func memLimitMetric(prefix string, s *MemoryStats) *metricspb.Metric {
-	return intGauge(prefix+"memory.limit", "Bytes", s.Limit)
+	require.NotNil(t, metrics)
+	require.EqualValues(t, timestamp, metrics[0].Timeseries[0].Points[0].Timestamp)
 }
